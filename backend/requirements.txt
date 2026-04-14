@@ -3,3 +3,4 @@ uvicorn
 azure-cosmos
 azure-storage-blob
 python-multipart
+python-dotenv
