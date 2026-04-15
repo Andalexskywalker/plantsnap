@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantSnap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f7f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 1rem;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .header {
+            background: #1a5c38;
+            border-radius: 24px;
+            padding: 2rem 1.5rem 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .upload-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        .upload-area {
+            border: 2px dashed #a5d6a7;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f9fdf9;
+            margin-bottom: 1rem;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: #1a5c38;
+            background: #f0f7f0;
+        }
+
+        .upload-area .placeholder {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .upload-area .placeholder .icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .upload-area .placeholder p {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .upload-area .placeholder span {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .upload-area img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: none;
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .btn-secondary {
+            padding: 12px;
+            background: #f0f7f0;
+            color: #1a5c38;
+            border: 1.5px solid #a5d6a7;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e0f0e0;
+        }
+
+        .btn-identify {
+            width: 100%;
+            padding: 14px;
+            background: #1a5c38;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-identify:hover {
+            background: #145230;
+        }
+
+        .btn-identify:disabled {
+            background: #a5d6a7;
+            cursor: not-allowed;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .result-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .result-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #e8f5e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        .result-image img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .result-body {
+            padding: 1.25rem;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .plant-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .probability {
+            background: #e8f5e9;
+            color: #1a5c38;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .cta-card {
+            background: #f0f7f0;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #a5d6a7;
+        }
+
+        .cta-card p {
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .btn-register {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #1a5c38;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+
+        .loading p {
+            color: #1a5c38;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e8f5e9;
+            border-top: 3px solid #1a5c38;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            background: #fff3f3;
+            border: 1px solid #ffcdd2;
+            border-radius: 12px;
+            padding: 1rem;
+            color: #c62828;
+            font-size: 14px;
+            display: none;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <h1>🌿 PlantSnap</h1>
+            <p>Identifica qualquer planta</p>
+        </div>
+
+        <div class="upload-card">
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="placeholder" id="placeholder">
+                    <div class="icon">📷</div>
+                    <p>Toca para escolher uma foto</p>
+                    <span>da planta que queres identificar</span>
+                </div>
+                <img id="preview" alt="preview" />
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="document.getElementById('cameraInput').click()">📸
+                    Câmara</button>
+                <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">🖼️
+                    Galeria</button>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)" />
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleFile(event)" />
+
+            <button class="btn-identify" id="btnIdentify" onclick="identify()" disabled>Identificar Planta</button>
+        </div>
+
+        <div class="error" id="error"></div>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>A identificar a planta...</p>
+        </div>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-image" id="resultImage">🌿</div>
+            <div class="result-body">
+                <div class="result-header">
+                    <span class="plant-name" id="plantName"></span>
+                    <span class="probability" id="probability"></span>
+                </div>
+                <div class="cta-card">
+                    <p>🔒 Cria uma conta para ver instruções de cuidado e guardar esta planta no teu jardim virtual!</p>
+                    <a class="btn-register" href="#">Criar conta</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://plantsnap-app.azurewebsites.net';
+        let selectedFile = null;
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                document.getElementById('placeholder').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+            document.getElementById('btnIdentify').disabled = false;
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+
+        async function identify() {
+            if (!selectedFile) return;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('btnIdentify').disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch(`${API_URL}/identify`, { method: 'POST', body: formData });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || 'Erro ao identificar');
+
+                document.getElementById('plantName').textContent = data.plantName;
+                document.getElementById('probability').textContent = `${data.probability}%`;
+
+                const resultImage = document.getElementById('resultImage');
+                resultImage.innerHTML = `<img src="${data.imageUrl}" alt="${data.plantName}" style="width:100%;height:220px;object-fit:cover;" />`;
+
+                document.getElementById('resultCard').style.display = 'block';
+            } catch (err) {
+                const errorDiv = document.getElementById('error');
+                errorDiv.textContent = err.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('btnIdentify').disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
