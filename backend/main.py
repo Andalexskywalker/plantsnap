@@ -84,7 +84,23 @@ async def identify_plant(file: UploadFile = File(...)):
         plant_name = suggestion["name"]
         probability = round(suggestion["probability"] * 100, 1)
 
-        # 3. Upload imagem para BLOB Storage
+        return {
+            "plantName": plant_name,
+            "probability": probability
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        raise HTTPException(status_code=500, detail=traceback.format_exc())
+
+@app.post("/save")
+async def save_plant(file: UploadFile = File(...), plantName: str = "", probability: float = 0.0):
+    try:
+        contents = await file.read()
+
+        # Upload para BLOB Storage
         blob_name = f"{uuid.uuid4()}-{file.filename}"
         blob_client = blob_service_client.get_blob_client(
             container=os.getenv("STORAGE_CONTAINER"),
@@ -93,11 +109,11 @@ async def identify_plant(file: UploadFile = File(...)):
         blob_client.upload_blob(contents)
         blob_url = blob_client.url
 
-        # 4. Guardar no CosmosDB
+        # Guardar no CosmosDB
         plant_record = {
             "id": str(uuid.uuid4()),
             "userId": "anonymous",
-            "plantName": plant_name,
+            "plantName": plantName,
             "probability": probability,
             "imageUrl": blob_url,
             "imageName": blob_name
@@ -105,13 +121,11 @@ async def identify_plant(file: UploadFile = File(...)):
         container.create_item(plant_record)
 
         return {
-            "plantName": plant_name,
-            "probability": probability,
-            "imageUrl": blob_url
+            "message": "Planta guardada com sucesso!",
+            "imageUrl": blob_url,
+            "recordId": plant_record["id"]
         }
 
-    except HTTPException:
-        raise
     except Exception as e:
         import traceback
         raise HTTPException(status_code=500, detail=traceback.format_exc())
