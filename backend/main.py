@@ -10,10 +10,17 @@ import os
 import uuid
 import base64
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 load_dotenv()
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/app")
+def serve_frontend():
+    return FileResponse("static/index.html")
 
 app.add_middleware(
     CORSMiddleware,
