@@ -4,3 +4,5 @@ azure-cosmos
 azure-storage-blob
 python-multipart
 python-dotenv
+azure-ai-vision-imageanalysis
+httpx
