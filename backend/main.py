@@ -79,23 +79,69 @@ async def identify_plant(file: UploadFile = File(...)):
 
         # 2. Plant.id - identificar a planta
         image_base64 = base64.b64encode(contents).decode("utf-8")
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             plantid_response = await client.post(
                 "https://plant.id/api/v3/identification",
                 headers={"Api-Key": PLANTID_API_KEY},
                 json={
                     "images": [f"data:image/jpeg;base64,{image_base64}"],
-                    "similar_images": True
+                    "similar_images": True,
                 }
             )
+        print("Status:", plantid_response.status_code)
+        print("Response text:", plantid_response.text)
         plantid_data = plantid_response.json()
+        print("Full suggestion:", plantid_data["result"]["classification"]["suggestions"][0])  # debug
         suggestion = plantid_data["result"]["classification"]["suggestions"][0]
         plant_name = suggestion["name"]
         probability = round(suggestion["probability"] * 100, 1)
+        entity_id = suggestion["details"].get("entity_id", "")
+
+        # 3. Plant.id KB - buscar detalhes completos
+        watering = "Não disponível"
+        description = ""
+        common_names = []
+        if entity_id:
+            async with httpx.AsyncClient() as client:
+                # Primeiro search pelo nome para obter o KB id
+                search_response = await client.get(
+                    f"https://plant.id/api/v3/kb/plants/name_search",
+                    headers={"Api-Key": PLANTID_API_KEY},
+                    params={"q": plant_name}
+                )
+            print("Search Status:", search_response.status_code)
+            print("Search Response:", search_response.text[:300])
+            search_data = search_response.json()
+            
+            if search_data.get("entities") and len(search_data["entities"]) > 0:
+                kb_id = search_data["entities"][0]["access_token"]
+                
+                async with httpx.AsyncClient() as client:
+                    kb_response = await client.get(
+                        f"https://plant.id/api/v3/kb/plants/{kb_id}",
+                        headers={"Api-Key": PLANTID_API_KEY},
+                        params={"details": "common_names,watering,description,edible_parts", "language": "en"}
+                    )
+                print("KB Status:", kb_response.status_code)
+                print("KB Response:", kb_response.text[:300])
+                kb_data = kb_response.json()
+                common_names = kb_data.get("common_names", [])
+                description = kb_data.get("description", {}).get("value", "")
+                watering_data = kb_data.get("watering", {})
+                if watering_data:
+                    min_w = watering_data.get("min", "?")
+                    max_w = watering_data.get("max", "?")
+                    if min_w == max_w:
+                        watering = f"{min_w}x por semana"
+                    else:
+                        watering = f"{min_w} a {max_w}x por semana"
 
         return {
             "plantName": plant_name,
-            "probability": probability
+            "probability": probability,
+            "watering": watering,
+            "description": description,
+            "commonNames": common_names
         }
 
     except HTTPException:
