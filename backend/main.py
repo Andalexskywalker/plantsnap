@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Request
+from fastapi import FastAPI, UploadFile, File, HTTPException, Request, Form
 from fastapi.middleware.cors import CORSMiddleware
 from azure.cosmos import CosmosClient
 from azure.storage.blob import BlobServiceClient
@@ -105,7 +105,7 @@ async def identify_plant(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=traceback.format_exc())
 
 @app.post("/save")
-async def save_plant(request: Request, file: UploadFile = File(...), plantName: str = "", probability: float = 0.0):
+async def save_plant(request: Request, file: UploadFile = File(...), plantName: str = Form(""), probability: float = Form(0.0)):
     user_email = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME", "anonymous")
     try:
         contents = await file.read()
@@ -137,7 +137,7 @@ async def get_garden(request: Request):
     from fastapi import Request
     user_email = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME", "anonymous")
     
-    query = f"SELECT * FROM c WHERE c.userId = '{user_email}' ORDER BY c._ts DESC"
+    query = f"SELECT * FROM c WHERE c.userId = '{user_email}' AND IS_DEFINED(c.plantName) ORDER BY c._ts DESC"
     items = list(container.query_items(query=query, enable_cross_partition_query=True))
     
     return {"plants": items}
