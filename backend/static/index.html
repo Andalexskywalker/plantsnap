@@ -30,7 +30,7 @@
         .header {
             background: #1a5c38;
             border-radius: 24px;
-            padding: 2rem 1.5rem 1.5rem;
+            padding: 1.5rem;
             text-align: center;
             margin-bottom: 1rem;
         }
@@ -45,6 +45,49 @@
         .header p {
             color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .user-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .user-name {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn-login {
+            padding: 8px 16px;
+            background: #fff;
+            color: #1a5c38;
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-logout {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 8px;
         }
 
         .upload-card {
@@ -120,7 +163,6 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .btn-secondary:hover {
@@ -137,11 +179,6 @@
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-identify:hover {
-            background: #145230;
         }
 
         .btn-identify:disabled {
@@ -165,18 +202,11 @@
         .result-image {
             width: 100%;
             height: 220px;
-            object-fit: cover;
             background: #e8f5e9;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 60px;
-        }
-
-        .result-image img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
         }
 
         .result-body {
@@ -203,7 +233,32 @@
             font-weight: 600;
             padding: 4px 12px;
             border-radius: 20px;
-            white-space: nowrap;
+        }
+
+        .care-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .care-item {
+            background: #f9fdf9;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .care-item .care-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .care-item .care-value {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
         }
 
         .cta-card {
@@ -221,7 +276,19 @@
             line-height: 1.5;
         }
 
-        .btn-register {
+        .btn-save {
+            width: 100%;
+            padding: 12px;
+            background: #1a5c38;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-google {
             display: inline-block;
             padding: 10px 20px;
             background: #1a5c38;
@@ -272,6 +339,18 @@
             display: none;
             margin-bottom: 1rem;
         }
+
+        .success {
+            background: #f0fff4;
+            border: 1px solid #a5d6a7;
+            border-radius: 12px;
+            padding: 1rem;
+            color: #1a5c38;
+            font-size: 14px;
+            display: none;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -280,6 +359,9 @@
         <div class="header">
             <h1>🌿 PlantSnap</h1>
             <p>Identifica qualquer planta</p>
+            <div class="user-bar" id="userBar">
+                <button class="btn-login" onclick="login()">Entrar com Google</button>
+            </div>
         </div>
 
         <div class="upload-card">
@@ -291,21 +373,19 @@
                 </div>
                 <img id="preview" alt="preview" />
             </div>
-
             <div class="btn-row">
                 <button class="btn-secondary" onclick="document.getElementById('cameraInput').click()">📸
                     Câmara</button>
                 <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">🖼️
                     Galeria</button>
             </div>
-
             <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)" />
             <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleFile(event)" />
-
             <button class="btn-identify" id="btnIdentify" onclick="identify()" disabled>Identificar Planta</button>
         </div>
 
         <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>A identificar a planta...</p>
@@ -318,10 +398,32 @@
                     <span class="plant-name" id="plantName"></span>
                     <span class="probability" id="probability"></span>
                 </div>
-                <div class="cta-card">
-                    <p>🔒 Cria uma conta para ver instruções de cuidado e guardar esta planta no teu jardim virtual!</p>
-                    <a class="btn-register" href="#">Criar conta</a>
+                <div id="authenticatedContent" style="display:none;">
+                    <div class="care-grid">
+                        <div class="care-item">
+                            <div class="care-label">💧 Rega</div>
+                            <div class="care-value" id="careWatering">—</div>
+                        </div>
+                        <div class="care-item">
+                            <div class="care-label">☀️ Luz</div>
+                            <div class="care-value" id="careLight">—</div>
+                        </div>
+                    </div>
+                    <button class="btn-save" onclick="savePlant()">🌱 Guardar no jardim virtual</button>
                 </div>
+                <div class="cta-card" id="anonymousContent">
+                    <p>🔒 Entra com a tua conta Google para ver instruções de cuidado e guardar esta planta no teu
+                        jardim virtual!</p>
+                    <a class="btn-google" onclick="login()">Entrar com Google</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="gardenSection" style="display:none;">
+            <div style="background:#fff; border-radius:20px; padding:1.5rem; border:1px solid #e0e0e0;">
+                <h2 style="font-size:18px; font-weight:600; color:#1a5c38; margin-bottom:1rem;">🌿 O meu jardim virtual
+                </h2>
+                <div id="gardenList"></div>
             </div>
         </div>
     </div>
@@ -329,6 +431,47 @@
     <script>
         const API_URL = 'https://plantsnap-app.azurewebsites.net';
         let selectedFile = null;
+        let currentUser = null;
+        let lastIdentification = null;
+
+        async function checkAuth() {
+            try {
+                const res = await fetch(`${API_URL}/.auth/me`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        const claims = data[0].user_claims;
+                        const name = claims.find(c => c.typ === 'name')?.val || 'Utilizador';
+                        const email = claims.find(c => c.typ === 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')?.val || '';
+                        const picture = claims.find(c => c.typ === 'picture')?.val || '';
+                        currentUser = { name, email, picture };
+                        updateUserBar();
+                        loadGarden();
+                    }
+                }
+            } catch (e) { }
+        }
+
+        function updateUserBar() {
+            const bar = document.getElementById('userBar');
+            if (currentUser) {
+                bar.innerHTML = `
+          ${currentUser.picture ? `<img class="user-avatar" src="${currentUser.picture}" />` : ''}
+          <span class="user-name">${currentUser.name}</span>
+          <button class="btn-logout" onclick="logout()">Sair</button>
+        `;
+                document.getElementById('authenticatedContent').style.display = 'block';
+                document.getElementById('anonymousContent').style.display = 'none';
+                document.getElementById('gardenSection').style.display = 'block';
+            } else {
+                bar.innerHTML = `<button class="btn-login" onclick="login()">Entrar com Google</button>`;
+                document.getElementById('authenticatedContent').style.display = 'none';
+                document.getElementById('anonymousContent').style.display = 'block';
+            }
+        }
+
+        function login() { window.location.href = `${API_URL}/.auth/login/google?post_login_redirect_uri=/app`; }
+        function logout() { window.location.href = `${API_URL}/.auth/logout?post_logout_redirect_uri=/app`; }
 
         function handleFile(event) {
             const file = event.target.files[0];
@@ -362,8 +505,12 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.detail || 'Erro ao identificar');
 
+                lastIdentification = data;
                 document.getElementById('plantName').textContent = data.plantName;
                 document.getElementById('probability').textContent = `${data.probability}%`;
+
+                if (data.watering) document.getElementById('careWatering').textContent = data.watering;
+                if (data.light) document.getElementById('careLight').textContent = data.light;
 
                 const resultImage = document.getElementById('resultImage');
                 resultImage.innerHTML = '';
@@ -373,6 +520,10 @@
                 resultImage.appendChild(img);
 
                 document.getElementById('resultCard').style.display = 'block';
+                if (currentUser) {
+                    document.getElementById('authenticatedContent').style.display = 'block';
+                    document.getElementById('anonymousContent').style.display = 'none';
+                }
             } catch (err) {
                 const errorDiv = document.getElementById('error');
                 errorDiv.textContent = err.message;
@@ -382,6 +533,53 @@
                 document.getElementById('btnIdentify').disabled = false;
             }
         }
+
+        async function savePlant() {
+            if (!selectedFile || !lastIdentification) return;
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('plantName', lastIdentification.plantName);
+            formData.append('probability', lastIdentification.probability);
+
+            try {
+                const res = await fetch(`${API_URL}/save`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail);
+                const s = document.getElementById('success');
+                s.textContent = '🌱 Planta guardada no jardim virtual!';
+                s.style.display = 'block';
+                setTimeout(() => s.style.display = 'none', 3000);
+                loadGarden();
+            } catch (err) {
+                const e = document.getElementById('error');
+                e.textContent = err.message;
+                e.style.display = 'block';
+            }
+        }
+
+        async function loadGarden() {
+            if (!currentUser) return;
+            try {
+                const res = await fetch(`${API_URL}/garden`);
+                const data = await res.json();
+                const list = document.getElementById('gardenList');
+                if (!data.plants || data.plants.length === 0) {
+                    list.innerHTML = '<p style="color:#888; font-size:14px; text-align:center;">Ainda não tens plantas no jardim!</p>';
+                    return;
+                }
+                list.innerHTML = data.plants.map(p => `
+          <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f0f0f0;">
+            <div style="width:48px; height:48px; border-radius:10px; background:#e8f5e9; display:flex; align-items:center; justify-content:center; font-size:24px;">🌿</div>
+            <div>
+              <div style="font-size:14px; font-weight:600; color:#1a1a1a;">${p.plantName}</div>
+              <div style="font-size:12px; color:#888;">${p.probability}% confiança</div>
+            </div>
+          </div>
+        `).join('');
+            } catch (e) { }
+        }
+
+        checkAuth();
     </script>
 </body>
 

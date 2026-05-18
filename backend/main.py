@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from azure.cosmos import CosmosClient
 from azure.storage.blob import BlobServiceClient
@@ -46,6 +46,8 @@ vision_client = ImageAnalysisClient(
 # Plant.id
 PLANTID_API_KEY = os.getenv("PLANTID_API_KEY")
 
+
+#ENDPOINTS AQUI!!
 @app.get("/")
 def root():
     return {"message": "PlantSnap API is running!"}
@@ -103,11 +105,10 @@ async def identify_plant(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=traceback.format_exc())
 
 @app.post("/save")
-async def save_plant(file: UploadFile = File(...), plantName: str = "", probability: float = 0.0):
+async def save_plant(request: Request, file: UploadFile = File(...), plantName: str = "", probability: float = 0.0):
+    user_email = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME", "anonymous")
     try:
         contents = await file.read()
-
-        # Upload para BLOB Storage
         blob_name = f"{uuid.uuid4()}-{file.filename}"
         blob_client = blob_service_client.get_blob_client(
             container=os.getenv("STORAGE_CONTAINER"),
@@ -116,10 +117,9 @@ async def save_plant(file: UploadFile = File(...), plantName: str = "", probabil
         blob_client.upload_blob(contents)
         blob_url = blob_client.url
 
-        # Guardar no CosmosDB
         plant_record = {
             "id": str(uuid.uuid4()),
-            "userId": "anonymous",
+            "userId": user_email,
             "plantName": plantName,
             "probability": probability,
             "imageUrl": blob_url,
@@ -127,12 +127,17 @@ async def save_plant(file: UploadFile = File(...), plantName: str = "", probabil
         }
         container.create_item(plant_record)
 
-        return {
-            "message": "Planta guardada com sucesso!",
-            "imageUrl": blob_url,
-            "recordId": plant_record["id"]
-        }
-
+        return {"message": "Planta guardada com sucesso!", "imageUrl": blob_url, "recordId": plant_record["id"]}
     except Exception as e:
         import traceback
         raise HTTPException(status_code=500, detail=traceback.format_exc())
+
+@app.get("/garden")
+async def get_garden(request: Request):
+    from fastapi import Request
+    user_email = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME", "anonymous")
+    
+    query = f"SELECT * FROM c WHERE c.userId = '{user_email}' ORDER BY c._ts DESC"
+    items = list(container.query_items(query=query, enable_cross_partition_query=True))
+    
+    return {"plants": items}
