@@ -6,6 +6,7 @@ import os
 
 app = func.FunctionApp()
 
+
 @app.timer_trigger(schedule="0 0 8 * * *", arg_name="mytimer", run_on_startup=False)
 def WateringReminder(mytimer: func.TimerRequest) -> None:
     logging.info('WateringReminder function triggered')
@@ -38,7 +39,7 @@ def WateringReminder(mytimer: func.TimerRequest) -> None:
         plant_list = "\n".join([f"- {p.get('plantName', 'Planta desconhecida')} (rega: {p.get('watering', 'N/A')})" for p in user_plants])
         
         message = {
-            "senderAddress": "DoNotReply@plantsnap.azurecomm.net",
+            "senderAddress": "DoNotReply@38995e80-977e-4b66-b67c-124dd2a1b7ba.azurecomm.net",
             "recipients": {
                 "to": [{"address": email}]
             },
