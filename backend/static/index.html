@@ -1,11 +1,50 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlantSnap</title>
+    <title>PlantSnap - O teu Assistente Botânico</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* --- SYSTEM DESIGN & UTILITIES --- */
+        :root {
+            --primary: #1a5c38;
+            --primary-light: #e8f5e9;
+            --primary-medium: #a5d6a7;
+            --primary-dark: #0f3a23;
+            --primary-glow: rgba(26, 92, 56, 0.12);
+            
+            --bg-app: #f4f8f5;
+            --bg-card: #ffffff;
+            --bg-nav: #ffffff;
+            --border-color: rgba(26, 92, 56, 0.08);
+            
+            --text-main: #141f19;
+            --text-muted: #5d6e64;
+            
+            --error-bg: #fff5f5;
+            --error-text: #c62828;
+            --error-border: rgba(198, 40, 40, 0.15);
+            
+            --success-bg: #f0fff4;
+            --success-text: #1a5c38;
+            --success-border: rgba(26, 92, 56, 0.15);
+            
+            --shadow-sm: 0 4px 12px rgba(26, 92, 56, 0.03);
+            --shadow-md: 0 12px 28px rgba(26, 92, 56, 0.05);
+            --shadow-lg: 0 16px 36px rgba(26, 92, 56, 0.08);
+            
+            --radius-sm: 14px;
+            --radius-md: 22px;
+            --radius-lg: 32px;
+            
+            --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,427 +52,1176 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f0f7f0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #d8e4dd;
+            background-image: radial-gradient(at 0% 0%, hsla(147, 56%, 23%, 0.08) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, hsla(147, 56%, 23%, 0.04) 0px, transparent 50%);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding: 1rem;
+            align-items: center;
         }
 
-        .app {
+        /* Mobile Shell Frame */
+        .app-container {
             width: 100%;
-            max-width: 400px;
-        }
-
-        .header {
-            background: #1a5c38;
-            border-radius: 24px;
-            padding: 1.5rem;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .header h1 {
-            color: #fff;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .header p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        .user-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .user-name {
-            color: #fff;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .btn-login {
-            padding: 8px 16px;
-            background: #fff;
-            color: #1a5c38;
-            border: none;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-logout {
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-left: 8px;
-        }
-
-        .upload-card {
-            background: #fff;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid #e0e0e0;
-        }
-
-        .upload-area {
-            border: 2px dashed #a5d6a7;
-            border-radius: 16px;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 840px;
+            background-color: var(--bg-app);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
-            background: #f9fdf9;
-            margin-bottom: 1rem;
-            min-height: 200px;
             display: flex;
-            align-items: center;
-            justify-content: center;
             flex-direction: column;
-            cursor: pointer;
-            transition: all 0.2s;
+            position: relative;
+            border: 6px solid #ffffff;
         }
 
-        .upload-area:hover {
-            border-color: #1a5c38;
-            background: #f0f7f0;
+        @media (max-width: 480px) {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .app-container {
+                max-width: 100%;
+                height: 100vh;
+                max-height: 100%;
+                border-radius: 0;
+                border: none;
+            }
         }
 
-        .upload-area .placeholder {
-            text-align: center;
-            padding: 2rem 1rem;
+        /* Scrollable area for Tab contents */
+        .tab-content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1.5rem calc(76px + 1.5rem) 1.5rem;
+            scroll-behavior: smooth;
         }
 
-        .upload-area .placeholder .icon {
-            font-size: 40px;
+        .tab-content-wrapper::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for PWA visual feel */
+        }
+
+        /* Tab panels */
+        .tab-pane {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .tab-pane.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- CARDS & GENERAL UI --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
             margin-bottom: 8px;
         }
 
-        .upload-area .placeholder p {
-            font-size: 15px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 4px;
+        .card-desc {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
         }
 
-        .upload-area .placeholder span {
-            font-size: 13px;
-            color: #888;
-        }
-
-        .upload-area img {
+        /* Buttons */
+        .btn {
+            font-family: inherit;
+            font-size: 14.5px;
+            font-weight: 650;
+            padding: 13px 22px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition);
             width: 100%;
-            height: 220px;
-            object-fit: cover;
-            display: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1.5px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background-color: var(--primary-medium);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid rgba(26, 92, 56, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dfedd9;
+            transform: translateY(-1px);
+        }
+
+        .btn-google {
+            background-color: var(--primary-dark);
+            color: #ffffff;
+        }
+
+        .btn-google:hover {
+            background-color: #082114;
+        }
+
+        .btn-outline-danger {
+            background-color: transparent;
+            color: #d32f2f;
+            border: 1.5px solid rgba(211, 47, 47, 0.2);
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #ffebee;
+            border-color: #d32f2f;
         }
 
         .btn-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 1rem;
         }
 
-        .btn-secondary {
-            padding: 12px;
-            background: #f0f7f0;
-            color: #1a5c38;
-            border: 1.5px solid #a5d6a7;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-secondary:hover {
-            background: #e0f0e0;
-        }
-
-        .btn-identify {
+        .btn-full {
             width: 100%;
-            padding: 14px;
-            background: #1a5c38;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
         }
 
-        .btn-identify:disabled {
-            background: #a5d6a7;
-            cursor: not-allowed;
+        /* Page Headers */
+        .page-header {
+            margin-bottom: 1.75rem;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* --- TABS IMPLEMENTATIONS --- */
+
+        /* 1. HOME TAB */
+        .brand-container {
+            text-align: center;
+            padding: 2.5rem 1rem 1.75rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-svg-wrapper {
+            width: 76px;
+            height: 76px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 8px 20px var(--primary-glow);
+        }
+
+        .logo-svg {
+            font-size: 38px;
+            animation: sway 4s ease-in-out infinite alternate;
+            display: inline-block;
+        }
+
+        @keyframes sway {
+            from { transform: rotate(-8deg); }
+            to { transform: rotate(10deg); }
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 850;
+            color: var(--primary-dark);
+            letter-spacing: -0.8px;
+        }
+
+        .logo-subtext {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* User Welcome Cards */
+        .user-welcome-card {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: #ffffff;
+            border: none;
+        }
+
+        .user-welcome-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar-sm {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            object-fit: cover;
+        }
+
+        .welcome-greet {
+            font-size: 16px;
+            font-weight: 750;
+        }
+
+        .welcome-sub {
+            font-size: 12.5px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 2px;
+        }
+
+        .welcome-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .welcome-actions .btn {
+            padding: 10px 14px;
+            font-size: 13px;
+        }
+
+        .welcome-actions .btn-primary {
+            background-color: #ffffff;
+            color: var(--primary-dark);
+            box-shadow: none;
+        }
+
+        .welcome-actions .btn-primary:hover {
+            background-color: #f0f0f0;
+        }
+
+        .welcome-actions .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .welcome-actions .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Guest Welcome */
+        .welcome-actions-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .google-icon {
+            margin-right: 2px;
+        }
+
+        .features-list {
+            margin-top: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            background-color: #ffffff;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .feature-text h4 {
+            font-size: 14.5px;
+            font-weight: 750;
+            color: var(--primary-dark);
+        }
+
+        .feature-text p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        /* 2. IDENTIFY TAB */
+        .upload-area {
+            border: 2.5px dashed var(--primary-medium);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: #fdfdfd;
+            margin-bottom: 1.25rem;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .upload-placeholder {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-icon-svg {
+            font-size: 42px;
+            filter: drop-shadow(0 4px 6px rgba(26, 92, 56, 0.15));
+            transition: var(--transition);
+        }
+
+        .upload-area:hover .upload-icon-svg {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .upload-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: none;
+            border-radius: var(--radius-md);
         }
 
         input[type="file"] {
             display: none;
         }
 
-        .result-card {
-            background: #fff;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid #e0e0e0;
-            margin-bottom: 1rem;
+        /* Scanning Laser Line Overlay */
+        .scanner-laser {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, transparent, #2ecf72, #ffffff, #2ecf72, transparent);
+            box-shadow: 0 0 8px #2ecf72, 0 0 15px #ffffff;
             display: none;
+            z-index: 10;
         }
 
-        .result-image {
+        .scanning .scanner-laser {
+            display: block;
+            animation: scanAnimation 2s linear infinite;
+        }
+
+        .scanning .image-preview {
+            filter: brightness(0.7) contrast(1.1);
+        }
+
+        @keyframes scanAnimation {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        /* Loader */
+        .loading-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 6px;
+        }
+
+        .spinner {
             width: 100%;
-            height: 220px;
-            background: #e8f5e9;
+            height: 100%;
+            border: 4px solid var(--primary-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.55, 0.085, 0.68, 0.53) infinite;
+        }
+
+        .spinner-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0.5;
+            animation: spin 1s cubic-bezier(0.55, 0.085, 0.68, 0.53) infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-state h3 {
+            font-size: 17px;
+            font-weight: 750;
+            color: var(--primary-dark);
+        }
+
+        .loading-state p {
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 280px;
+        }
+
+        /* Results Card */
+        .result-card {
+            display: none;
+            padding: 0;
+            overflow: hidden;
+            border-radius: var(--radius-md);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-hero {
+            height: 200px;
+            position: relative;
+            background-color: var(--primary-light);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
         }
 
-        .result-body {
-            padding: 1.25rem;
+        .result-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .result-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to top, var(--bg-card), transparent);
+        }
+
+        .result-content {
+            padding: 1.25rem 1.5rem 1.5rem 1.5rem;
         }
 
         .result-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 1.25rem;
         }
 
         .plant-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a1a;
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1.2;
         }
 
-        .probability {
-            background: #e8f5e9;
-            color: #1a5c38;
+        .confidence-badge {
+            background-color: var(--primary-light);
+            border: 1px solid rgba(26, 92, 56, 0.12);
+            padding: 5px 12px;
+            border-radius: 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-width: 76px;
+        }
+
+        .badge-text {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .badge-label {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .plant-description-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
             font-size: 13px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
         }
 
-        .care-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
+        .plant-description {
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        /* Anonymous CTA inside result */
+        .anonymous-cta-card {
+            background-color: var(--primary-light);
+            border: 1px dashed var(--primary-medium);
+            border-radius: var(--radius-sm);
+            padding: 1.25rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .cta-text {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            line-height: 1.4;
             margin-bottom: 12px;
         }
 
-        .care-item {
-            background: #f9fdf9;
-            border-radius: 10px;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .care-item .care-label {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 4px;
-        }
-
-        .care-item .care-value {
-            font-size: 13px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .cta-card {
-            background: #f0f7f0;
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-            border: 1px solid #a5d6a7;
-        }
-
-        .cta-card p {
-            font-size: 13px;
-            color: #444;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-
-        .btn-save {
-            width: 100%;
-            padding: 12px;
-            background: #1a5c38;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-google {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #1a5c38;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            display: none;
-        }
-
-        .loading p {
-            color: #1a5c38;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #e8f5e9;
-            border-top: 3px solid #1a5c38;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
+        /* Errors and Success */
         .error {
-            background: #fff3f3;
-            border: 1px solid #ffcdd2;
-            border-radius: 12px;
-            padding: 1rem;
-            color: #c62828;
-            font-size: 14px;
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: var(--error-text);
+            font-size: 13.5px;
+            font-weight: 500;
             display: none;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.4;
         }
 
         .success {
-            background: #f0fff4;
-            border: 1px solid #a5d6a7;
-            border-radius: 12px;
-            padding: 1rem;
-            color: #1a5c38;
-            font-size: 14px;
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: var(--success-text);
+            font-size: 13.5px;
+            font-weight: 600;
             display: none;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
             text-align: center;
+            line-height: 1.4;
+        }
+
+        /* 3. GARDEN TAB */
+        .garden-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .plant-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .plant-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .plant-card-img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            background-color: var(--primary-light);
+        }
+
+        .plant-card-info {
+            padding: 10px 12px 12px 12px;
+        }
+
+        .plant-card-title {
+            font-size: 13.5px;
+            font-weight: 750;
+            color: var(--primary-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .plant-card-badge {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* Locked / Empty states styling */
+        .locked-card, .empty-card {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lock-icon, .empty-icon {
+            font-size: 48px;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.05));
+        }
+
+        .locked-card h3, .empty-card h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .locked-card p, .empty-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+            max-width: 280px;
+        }
+
+        .locked-card .btn, .empty-card .btn {
+            max-width: 220px;
+        }
+
+        /* 4. PROFILE TAB */
+        .profile-card {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar-large-wrapper {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .avatar-large {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-light);
+            object-fit: cover;
+            box-shadow: 0 6px 16px var(--primary-glow);
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .profile-email {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 0;
+            margin: 1.75rem 0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-num {
+            font-size: 24px;
+            font-weight: 850;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .profile-guest-avatar {
+            font-size: 54px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+            box-shadow: 0 6px 16px var(--primary-glow);
+        }
+
+        /* --- BOTTOM NAV BAR --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 76px;
+            background-color: var(--bg-nav);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -4px 24px rgba(26, 92, 56, 0.04);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            gap: 4px;
+            outline: none;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 21px;
+            transition: var(--transition);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.2) translateY(-2px);
+            filter: drop-shadow(0 2px 6px var(--primary-glow));
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
         }
     </style>
 </head>
 
 <body>
-    <div class="app">
-        <div class="header">
-            <h1>🌿 PlantSnap</h1>
-            <p>Identifica qualquer planta</p>
-            <div class="user-bar" id="userBar">
-                <button class="btn-login" onclick="login()">Entrar com Google</button>
-            </div>
-        </div>
+    <div class="app-container">
+        <!-- Tab Content Wrapper -->
+        <div class="tab-content-wrapper">
 
-        <div class="upload-card">
-            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                <div class="placeholder" id="placeholder">
-                    <div class="icon">📷</div>
-                    <p>Toca para escolher uma foto</p>
-                    <span>da planta que queres identificar</span>
+            <!-- 1. HOME TAB PANEL -->
+            <div id="tab-home" class="tab-pane active">
+                <div class="brand-container">
+                    <div class="logo-emoji-wrapper">
+                        <svg class="logo-svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+                    </div>
+                    <h1 class="logo-text">PlantSnap</h1>
+                    <p class="logo-subtext">Identifica e cuida das tuas plantas</p>
                 </div>
-                <img id="preview" alt="preview" />
-            </div>
-            <div class="btn-row">
-                <button class="btn-secondary" onclick="document.getElementById('cameraInput').click()">📸
-                    Câmara</button>
-                <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">🖼️
-                    Galeria</button>
-            </div>
-            <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)" />
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleFile(event)" />
-            <button class="btn-identify" id="btnIdentify" onclick="identify()" disabled>Identificar Planta</button>
-        </div>
 
-        <div class="error" id="error"></div>
-        <div class="success" id="success"></div>
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>A identificar a planta...</p>
-        </div>
-
-        <div class="result-card" id="resultCard">
-            <div class="result-image" id="resultImage">🌿</div>
-            <div class="result-body">
-                <div class="result-header">
-                    <span class="plant-name" id="plantName"></span>
-                    <span class="probability" id="probability"></span>
-                </div>
-                <div id="authenticatedContent" style="display:none;">
-                    <div class="care-grid">
-                        <div class="care-item">
-                            <div class="care-label">💧 Rega</div>
-                            <div class="care-value" id="careWatering">—</div>
-                        </div>
-                        <div class="care-item">
-                            <div class="care-label">☀️ Luz</div>
-                            <div class="care-value" id="careLight">—</div>
+                <!-- Logged In Welcome -->
+                <div id="homeUserCard" class="card user-welcome-card" style="display: none;">
+                    <div class="user-welcome-info">
+                        <img id="homeUserAvatar" class="avatar-sm" src="" alt="avatar" />
+                        <div>
+                            <p class="welcome-greet">Olá, <span id="homeUserName">Utilizador</span>!</p>
+                            <p class="welcome-sub">Pronto para guardar novas plantas no teu jardim?</p>
                         </div>
                     </div>
-                    <button class="btn-save" onclick="savePlant()">🌱 Guardar no jardim virtual</button>
+                    <div class="welcome-actions">
+                        <button class="btn btn-primary" onclick="switchTab('tab-identify')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Identificar</button>
+                        <button class="btn btn-secondary" onclick="switchTab('tab-garden')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg> Meu Jardim</button>
+                    </div>
                 </div>
-                <div class="cta-card" id="anonymousContent">
-                    <p>🔒 Entra com a tua conta Google para ver instruções de cuidado e guardar esta planta no teu
-                        jardim virtual!</p>
-                    <a class="btn-google" onclick="login()">Entrar com Google</a>
+
+                <!-- Guest Welcome -->
+                <div id="homeGuestCard" class="card guest-welcome-card">
+                    <h3 class="card-title">Bem-vindo ao PlantSnap</h3>
+                    <p class="card-desc">Identifica qualquer espécie de planta em segundos e adiciona-a ao teu jardim virtual.</p>
+                    
+                    <div class="welcome-actions-stack">
+                        <button class="btn btn-primary btn-google" onclick="login()">
+                            <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
+                                <path fill="#ffffff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#ffffff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#ffffff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                                <path fill="#ffffff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                            </svg>
+                            Entrar com o Google
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchTab('tab-identify')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Continuar como Visitante
+                        </button>
+                    </div>
+                </div>
+
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                        <div class="feature-text">
+                            <h4>Identificação por Imagem</h4>
+                            <p>Tira ou envia uma foto e a nossa inteligência artificial fará a correspondência imediata.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg></div>
+                        <div class="feature-text">
+                            <h4>Jardim Digital Personalizado</h4>
+                            <p>Mantém as tuas plantas catalogadas na nuvem para consultar a qualquer momento.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- 2. IDENTIFY TAB PANEL -->
+            <div id="tab-identify" class="tab-pane">
+                <div class="page-header">
+                    <h2 class="page-title">Identificar Planta</h2>
+                    <p class="page-subtitle">Tira uma foto ou carrega da galeria</p>
+                </div>
+
+                <div class="card upload-card">
+                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-placeholder" id="placeholder">
+                            <svg class="upload-icon-svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                            <p class="upload-text">Escolher foto da planta</p>
+                            <p class="upload-subtext">Clica aqui ou arrasta o ficheiro</p>
+                        </div>
+                        <img id="preview" class="image-preview" alt="Antevisão da imagem" />
+                        <div class="scanner-laser" id="scannerLaser"></div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn btn-secondary" onclick="document.getElementById('cameraInput').click()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> Câmara
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> Galeria
+                        </button>
+                    </div>
+
+                    <input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)" />
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleFile(event)" />
+
+                    <button class="btn btn-primary btn-full" id="btnIdentify" onclick="identify()" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg> Identificar Planta
+                    </button>
+                </div>
+
+                <div class="error" id="error"></div>
+                <div class="success" id="success"></div>
+
+                <div class="loading-state" id="loading">
+                    <div class="spinner-container">
+                        <div class="spinner"></div>
+                        <div class="spinner-glow"></div>
+                    </div>
+                    <h3>A analisar a planta...</h3>
+                    <p>A procurar na nossa base de dados botânica.</p>
+                </div>
+
+                <!-- Result Card -->
+                <div class="card result-card" id="resultCard">
+                    <div class="result-hero" id="resultImage">
+                        <!-- Preview Image inserted by JS -->
+                    </div>
+                    <div class="result-content">
+                        <div class="result-header">
+                            <div>
+                                <h3 class="plant-name" id="plantName">—</h3>
+                            </div>
+                            <div class="confidence-badge">
+                                <span class="badge-text" id="probability">—</span>
+                                <span class="badge-label">Confiança</span>
+                            </div>
+                        </div>
+
+                        <div class="plant-description-wrapper">
+                            <h4 class="section-title">Descrição</h4>
+                            <p class="plant-description" id="plantDescription">—</p>
+                        </div>
+
+                        <!-- Authenticated actions -->
+                        <div id="authenticatedContent" style="display:none;">
+                            <button class="btn btn-primary btn-full btn-save" onclick="savePlant()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Guardar no meu Jardim
+                            </button>
+                        </div>
+
+                        <!-- Anonymous CTA -->
+                        <div class="anonymous-cta-card" id="anonymousContent">
+                            <p class="cta-text"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: middle;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> Entra com a tua conta Google para veres mais detalhes e guardares esta planta no teu jardim virtual!</p>
+                            <button class="btn btn-primary btn-google" onclick="login()">
+                                Entrar com Google
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. GARDEN TAB PANEL -->
+            <div id="tab-garden" class="tab-pane">
+                <div class="page-header">
+                    <h2 class="page-title">O Meu Jardim</h2>
+                    <p class="page-subtitle">As tuas espécies guardadas</p>
+                </div>
+
+                <!-- Auth Required Locked Card -->
+                <div id="anonymousGarden" class="card locked-card">
+                    <div class="lock-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+                    <h3>Jardim Bloqueado</h3>
+                    <p>Inicia sessão com a tua conta Google para criares e gerires o teu jardim de plantas salvas.</p>
+                    <button class="btn btn-primary btn-google" onclick="login()">
+                        Entrar com Google
+                    </button>
+                </div>
+
+                <!-- Authenticated Garden List -->
+                <div id="authenticatedGarden" style="display: none;">
+                    <div class="garden-grid" id="gardenList"></div>
+                </div>
+
+                <!-- Empty Garden state -->
+                <div id="emptyGarden" class="card empty-card" style="display: none;">
+                    <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+                    <h3>Sem Plantas Guardadas</h3>
+                    <p>Ainda não guardaste nenhuma planta. Identifica uma planta e guarda-a no teu jardim!</p>
+                    <button class="btn btn-primary" onclick="switchTab('tab-identify')">
+                        🔍 Identificar Planta
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. PROFILE TAB PANEL -->
+            <div id="tab-profile" class="tab-pane">
+                <div class="page-header">
+                    <h2 class="page-title">Perfil</h2>
+                    <p class="page-subtitle">A tua conta e preferências</p>
+                </div>
+
+                <!-- Profile Logged In -->
+                <div id="authenticatedProfile" style="display: none;" class="card profile-card">
+                    <div class="avatar-large-wrapper">
+                        <img id="profileAvatar" class="avatar-large" src="" alt="avatar" />
+                    </div>
+                    <h3 id="profileName" class="profile-name">Carregar nome...</h3>
+                    <p id="profileEmail" class="profile-email">carregar email...</p>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-num" id="profilePlantCount">0</span>
+                            <span class="stat-label">Plantas salvas</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-outline-danger btn-full" onclick="logout()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Terminar Sessão
+                    </button>
+                </div>
+
+                <!-- Profile Guest -->
+                <div id="anonymousProfile" class="card locked-card">
+                    <div class="profile-guest-avatar"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                    <h3>Visitante</h3>
+                    <p>Não tens sessão iniciada no momento.</p>
+                    <button class="btn btn-primary btn-google" onclick="login()">
+                        Entrar com Google
+                    </button>
+                </div>
+            </div>
+
         </div>
 
-        <div id="gardenSection" style="display:none;">
-            <div style="background:#fff; border-radius:20px; padding:1.5rem; border:1px solid #e0e0e0;">
-                <h2 style="font-size:18px; font-weight:600; color:#1a5c38; margin-bottom:1rem;">🌿 O meu jardim virtual
-                </h2>
-                <div id="gardenList"></div>
-            </div>
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav">
+            <button class="nav-item active" data-tab="tab-home" onclick="switchTab('tab-home')">
+                <span class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></span>
+                <span class="nav-label">Início</span>
+            </button>
+            <button class="nav-item" data-tab="tab-identify" onclick="switchTab('tab-identify')">
+                <span class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+                <span class="nav-label">Identificar</span>
+            </button>
+            <button class="nav-item" data-tab="tab-garden" onclick="switchTab('tab-garden')">
+                <span class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg></span>
+                <span class="nav-label">Jardim</span>
+            </button>
+            <button class="nav-item" data-tab="tab-profile" onclick="switchTab('tab-profile')">
+                <span class="nav-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+                <span class="nav-label">Perfil</span>
+            </button>
         </div>
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         const API_URL = 'https://plantsnap-app.azurewebsites.net';
         let selectedFile = null;
         let currentUser = null;
         let lastIdentification = null;
+        let savedPlantsList = [];
 
+        // Tab Switching Mechanism
+        function switchTab(tabId) {
+            const panes = document.querySelectorAll('.tab-pane');
+            panes.forEach(pane => {
+                pane.classList.remove('active');
+                pane.style.display = 'none';
+            });
+
+            const activePane = document.getElementById(tabId);
+            if (activePane) {
+                activePane.style.display = 'block';
+                // Trigger reflow for animation
+                void activePane.offsetWidth;
+                activePane.classList.add('active');
+            }
+
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            const activeNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
+            }
+
+            // Scroll tab content wrapper to top
+            document.querySelector('.tab-content-wrapper').scrollTop = 0;
+        }
+
+        // Authenticated check
         async function checkAuth() {
             try {
                 const res = await fetch(`${API_URL}/.auth/me`);
@@ -445,36 +1233,87 @@
                         const email = claims.find(c => c.typ === 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')?.val || '';
                         const picture = claims.find(c => c.typ === 'picture')?.val || '';
                         currentUser = { name, email, picture };
-                        updateUserBar();
+                        updateUI();
                         loadGarden();
+                    } else {
+                        currentUser = null;
+                        updateUI();
                     }
+                } else {
+                    currentUser = null;
+                    updateUI();
                 }
-            } catch (e) { }
-        }
-
-        function updateUserBar() {
-            const bar = document.getElementById('userBar');
-            if (currentUser) {
-                bar.innerHTML = `
-          ${currentUser.picture ? `<img class="user-avatar" src="${currentUser.picture}" />` : ''}
-          <span class="user-name">${currentUser.name}</span>
-          <button class="btn-logout" onclick="logout()">Sair</button>
-        `;
-                document.getElementById('authenticatedContent').style.display = 'block';
-                document.getElementById('anonymousContent').style.display = 'none';
-                document.getElementById('gardenSection').style.display = 'block';
-            } else {
-                bar.innerHTML = `<button class="btn-login" onclick="login()">Entrar com Google</button>`;
-                document.getElementById('authenticatedContent').style.display = 'none';
-                document.getElementById('anonymousContent').style.display = 'block';
+            } catch (e) {
+                currentUser = null;
+                updateUI();
             }
         }
 
+        // Update UI panels based on auth state
+        function updateUI() {
+            const isAuth = currentUser !== null;
+
+            // Home Tab
+            const homeUserCard = document.getElementById('homeUserCard');
+            const homeGuestCard = document.getElementById('homeGuestCard');
+            if (isAuth) {
+                homeUserCard.style.display = 'block';
+                homeGuestCard.style.display = 'none';
+                document.getElementById('homeUserName').textContent = currentUser.name;
+                document.getElementById('homeUserAvatar').src = currentUser.picture || 'data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231a5c38'/><path d='M50 55a15 15 0 1 0 0-30 15 15 0 0 0 0 30zm0 5c-13.3 0-40 6.7-40 20v10h80v-10c0-13.3-26.7-20-40-20z' fill='white'/></svg>';
+            } else {
+                homeUserCard.style.display = 'none';
+                homeGuestCard.style.display = 'block';
+            }
+
+            // Identify Tab Result Auth state
+            const authenticatedContent = document.getElementById('authenticatedContent');
+            const anonymousContent = document.getElementById('anonymousContent');
+            if (isAuth) {
+                authenticatedContent.style.display = 'block';
+                anonymousContent.style.display = 'none';
+            } else {
+                authenticatedContent.style.display = 'none';
+                anonymousContent.style.display = 'block';
+            }
+
+            // Garden Tab Auth panels
+            const authenticatedGarden = document.getElementById('authenticatedGarden');
+            const anonymousGarden = document.getElementById('anonymousGarden');
+            if (isAuth) {
+                authenticatedGarden.style.display = 'block';
+                anonymousGarden.style.display = 'none';
+            } else {
+                authenticatedGarden.style.display = 'none';
+                anonymousGarden.style.display = 'block';
+                document.getElementById('emptyGarden').style.display = 'none';
+            }
+
+            // Profile Tab
+            const authenticatedProfile = document.getElementById('authenticatedProfile');
+            const anonymousProfile = document.getElementById('anonymousProfile');
+            if (isAuth) {
+                authenticatedProfile.style.display = 'block';
+                anonymousProfile.style.display = 'none';
+                document.getElementById('profileName').textContent = currentUser.name;
+                document.getElementById('profileEmail').textContent = currentUser.email;
+                document.getElementById('profileAvatar').src = currentUser.picture || 'data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231a5c38'/><path d='M50 55a15 15 0 1 0 0-30 15 15 0 0 0 0 30zm0 5c-13.3 0-40 6.7-40 20v10h80v-10c0-13.3-26.7-20-40-20z' fill='white'/></svg>';
+            } else {
+                authenticatedProfile.style.display = 'none';
+                anonymousProfile.style.display = 'block';
+            }
+        }
+
+        // Login & Logout redirects
         function login() {
             window.location.href = `${API_URL}/.auth/login/google?post_login_redirect_uri=${API_URL}/app`;
         }
-        function logout() { window.location.href = `${API_URL}/.auth/logout?post_logout_redirect_uri=/app`; }
+        
+        function logout() {
+            window.location.href = `${API_URL}/.auth/logout?post_logout_redirect_uri=/app`;
+        }
 
+        // File loading handler
         function handleFile(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -490,13 +1329,21 @@
             document.getElementById('btnIdentify').disabled = false;
             document.getElementById('resultCard').style.display = 'none';
             document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
         }
 
+        // Identify action call
         async function identify() {
             if (!selectedFile) return;
-            document.getElementById('loading').style.display = 'block';
+            
+            // UI Visual Loading state
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.classList.add('scanning');
+            
+            document.getElementById('loading').style.display = 'flex';
             document.getElementById('resultCard').style.display = 'none';
             document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
             document.getElementById('btnIdentify').disabled = true;
 
             const formData = new FormData();
@@ -505,37 +1352,49 @@
             try {
                 const response = await fetch(`${API_URL}/identify`, { method: 'POST', body: formData });
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.detail || 'Erro ao identificar');
+                if (!response.ok) throw new Error(data.detail || 'Erro ao identificar planta.');
 
                 lastIdentification = data;
+                
+                // Set name & probability
                 document.getElementById('plantName').textContent = data.plantName;
                 document.getElementById('probability').textContent = `${data.probability}%`;
+                
+                // Set description
+                document.getElementById('plantDescription').textContent = data.description || 'Não foi encontrada nenhuma descrição detalhada para esta planta.';
 
-                if (data.watering) document.getElementById('careWatering').textContent = data.watering;
-                if (data.light) document.getElementById('careLight').textContent = data.light;
-
+                // Show target preview image inside resultHero
                 const resultImage = document.getElementById('resultImage');
                 resultImage.innerHTML = '';
                 const img = new Image();
-                img.style.cssText = 'width:100%;height:220px;object-fit:cover;';
+                img.style.cssText = 'width:100%;height:200px;object-fit:cover;';
                 img.src = document.getElementById('preview').src;
                 resultImage.appendChild(img);
 
                 document.getElementById('resultCard').style.display = 'block';
+                document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                // Keep auth action elements correctly mapped
                 if (currentUser) {
                     document.getElementById('authenticatedContent').style.display = 'block';
                     document.getElementById('anonymousContent').style.display = 'none';
+                } else {
+                    document.getElementById('authenticatedContent').style.display = 'none';
+                    document.getElementById('anonymousContent').style.display = 'block';
                 }
             } catch (err) {
                 const errorDiv = document.getElementById('error');
                 errorDiv.textContent = err.message;
                 errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } finally {
+                uploadArea.classList.remove('scanning');
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('btnIdentify').disabled = false;
             }
         }
 
+        // Save identified plant
         async function savePlant() {
             if (!selectedFile || !lastIdentification) return;
             const formData = new FormData();
@@ -546,42 +1405,64 @@
             try {
                 const res = await fetch(`${API_URL}/save`, { method: 'POST', body: formData });
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.detail);
+                if (!res.ok) throw new Error(data.detail || 'Erro ao salvar a planta.');
+                
                 const s = document.getElementById('success');
-                s.textContent = '🌱 Planta guardada no jardim virtual!';
+                s.textContent = '🌱 Planta guardada no teu jardim virtual!';
                 s.style.display = 'block';
-                setTimeout(() => s.style.display = 'none', 3000);
+                s.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                setTimeout(() => s.style.display = 'none', 4000);
+                
                 loadGarden();
             } catch (err) {
                 const e = document.getElementById('error');
                 e.textContent = err.message;
                 e.style.display = 'block';
+                e.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
 
+        // Load Garden List
         async function loadGarden() {
             if (!currentUser) return;
             try {
                 const res = await fetch(`${API_URL}/garden`);
                 const data = await res.json();
+                
+                savedPlantsList = data.plants || [];
+                
+                // Update profile stats counter
+                document.getElementById('profilePlantCount').textContent = savedPlantsList.length;
+                
                 const list = document.getElementById('gardenList');
-                if (!data.plants || data.plants.length === 0) {
-                    list.innerHTML = '<p style="color:#888; font-size:14px; text-align:center;">Ainda não tens plantas no jardim!</p>';
+                const emptyGarden = document.getElementById('emptyGarden');
+                
+                if (savedPlantsList.length === 0) {
+                    list.innerHTML = '';
+                    emptyGarden.style.display = 'block';
                     return;
                 }
-                list.innerHTML = data.plants.map(p => `
-          <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f0f0f0;">
-            <div style="width:48px; height:48px; border-radius:10px; background:#e8f5e9; display:flex; align-items:center; justify-content:center; font-size:24px;">🌿</div>
-            <div>
-              <div style="font-size:14px; font-weight:600; color:#1a1a1a;">${p.plantName}</div>
-              <div style="font-size:12px; color:#888;">${p.probability}% confiança</div>
-            </div>
-          </div>
-        `).join('');
-            } catch (e) { }
+                
+                emptyGarden.style.display = 'none';
+                
+                list.innerHTML = savedPlantsList.map(p => `
+                    <div class="plant-card">
+                        <img class="plant-card-img" src="${p.imageUrl}" alt="${p.plantName}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100%' height='100%' fill='%23e8f5e9'/><path d='M48.8 84.8A24.5 24.5 0 0 1 44.6 36.1C64.6 32.3 69.8 30.5 76.8 22c3.5 7 7 14.6 7 28 0 19.3-16.7 35-35 35ZM17.2 88.3c0-10.5 6.5-18.8 17.8-21 15.5-3 24.3-8.3 27.8-11.8' fill='none' stroke='%231a5c38' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/></svg>'">
+                        <div class="plant-card-info">
+                            <h4 class="plant-card-title">${p.plantName}</h4>
+                            <span class="plant-card-badge">${p.probability}% confiança</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error("Erro ao carregar o jardim:", e);
+            }
         }
 
-        checkAuth();
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
     </script>
 </body>
 
