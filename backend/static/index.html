@@ -470,7 +470,9 @@
             }
         }
 
-        function login() { window.location.href = `${API_URL}/.auth/login/google?post_login_redirect_uri=/app`; }
+        function login() {
+            window.location.href = `${API_URL}/.auth/login/google?post_login_redirect_uri=${API_URL}/app`;
+        }
         function logout() { window.location.href = `${API_URL}/.auth/logout?post_logout_redirect_uri=/app`; }
 
         function handleFile(event) {
