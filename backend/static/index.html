@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 
 <head>
@@ -1646,7 +1646,7 @@
                 emptyGarden.style.display = 'none';
 
                 list.innerHTML = savedPlantsList.map(p => `
-                    <div class="plant-card" onclick="openPlantModal('')" style="cursor: pointer;">
+                    <div class="plant-card" onclick="openPlantModal('${p.id}')" style="cursor: pointer;">
                         <img class="plant-card-img" src="${p.imageUrl}" alt="${p.plantName}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27><rect width=%27100%25%27 height=%27100%25%27 fill=%27%23e8f5e9%27/><path d=%27M48.8 84.8A24.5 24.5 0 0 1 44.6 36.1C64.6 32.3 69.8 30.5 76.8 22c3.5 7 7 14.6 7 28 0 19.3-16.7 35-35 35ZM17.2 88.3c0-10.5 6.5-18.8 17.8-21 15.5-3 24.3-8.3 27.8-11.8%27 fill=%27none%27 stroke=%27%231a5c38%27 stroke-width=%274%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/></svg>'">
                         <div class="plant-card-info">
                             <h4 class="plant-card-title">${p.plantName}</h4>
