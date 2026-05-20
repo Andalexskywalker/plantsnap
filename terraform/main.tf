@@ -15,10 +15,10 @@ provider "azurerm" {
 # Resource Group
 resource "azurerm_resource_group" "plantsnap" {
   name     = "plantsnap-rg"
-  location = "France Central"
+  location = "Sweden Central"
 }
 
-# CosmosDB
+# CosmosDB Account
 resource "azurerm_cosmosdb_account" "plantsnap" {
   name                = "plantsnap-cosmos"
   location            = azurerm_resource_group.plantsnap.location
@@ -36,25 +36,49 @@ resource "azurerm_cosmosdb_account" "plantsnap" {
   }
 }
 
-# Storage Account
+# CosmosDB SQL Database
+resource "azurerm_cosmosdb_sql_database" "plantsnap" {
+  name                = "plantsnap"
+  resource_group_name = azurerm_resource_group.plantsnap.name
+  account_name        = azurerm_cosmosdb_account.plantsnap.name
+}
+
+# CosmosDB SQL Container
+resource "azurerm_cosmosdb_sql_container" "plants" {
+  name                = "plants"
+  resource_group_name = azurerm_resource_group.plantsnap.name
+  account_name        = azurerm_cosmosdb_account.plantsnap.name
+  database_name       = azurerm_cosmosdb_sql_database.plantsnap.name
+  partition_key_path  = "/userId"
+}
+
+# Storage Account para imagens (BLOB)
 resource "azurerm_storage_account" "plantsnap" {
-  name                     = "plantsnapsa"
+  name                     = "plantsnapstorage"
   resource_group_name      = azurerm_resource_group.plantsnap.name
   location                 = azurerm_resource_group.plantsnap.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  allow_nested_items_to_be_public = true
 }
 
-# Container Registry
+# BLOB Container para imagens das plantas
+resource "azurerm_storage_container" "plant_images" {
+  name                  = "plant-images"
+  storage_account_name  = azurerm_storage_account.plantsnap.name
+  container_access_type = "blob"
+}
+
+# Azure Container Registry
 resource "azurerm_container_registry" "plantsnap" {
-  name                = "plantsnapcr"
+  name                = "plantsnapregistry"
   resource_group_name = azurerm_resource_group.plantsnap.name
   location            = azurerm_resource_group.plantsnap.location
   sku                 = "Basic"
   admin_enabled       = true
 }
 
-# App Service Plan
+# App Service Plan (para Web App)
 resource "azurerm_service_plan" "plantsnap" {
   name                = "plantsnap-plan"
   resource_group_name = azurerm_resource_group.plantsnap.name
@@ -63,7 +87,7 @@ resource "azurerm_service_plan" "plantsnap" {
   sku_name            = "B1"
 }
 
-# Web App
+# Web App (Docker Container)
 resource "azurerm_linux_web_app" "plantsnap" {
   name                = "plantsnap-app"
   resource_group_name = azurerm_resource_group.plantsnap.name
@@ -72,19 +96,23 @@ resource "azurerm_linux_web_app" "plantsnap" {
 
   site_config {
     container_registry_use_managed_identity = false
+    application_stack {
+      docker_image_name   = "plantsnap:latest"
+      docker_registry_url = "https://${azurerm_container_registry.plantsnap.login_server}"
+    }
   }
 }
 
-# Function App Storage
+# Storage Account para Azure Functions
 resource "azurerm_storage_account" "functions" {
-  name                     = "plantsnapfuncsa"
+  name                     = "plantsnapfuncstore"
   resource_group_name      = azurerm_resource_group.plantsnap.name
   location                 = azurerm_resource_group.plantsnap.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
 
-# Function App Plan
+# App Service Plan para Functions (Consumption - Serverless)
 resource "azurerm_service_plan" "functions" {
   name                = "plantsnap-func-plan"
   resource_group_name = azurerm_resource_group.plantsnap.name
@@ -93,7 +121,7 @@ resource "azurerm_service_plan" "functions" {
   sku_name            = "Y1"
 }
 
-# Function App
+# Azure Function App (Serverless - Watering Reminders)
 resource "azurerm_linux_function_app" "plantsnap" {
   name                       = "plantsnap-functions"
   resource_group_name        = azurerm_resource_group.plantsnap.name
@@ -109,7 +137,7 @@ resource "azurerm_linux_function_app" "plantsnap" {
   }
 }
 
-# Communication Services
+# Azure Communication Services (para envio de emails)
 resource "azurerm_communication_service" "plantsnap" {
   name                = "plantsnap-communication"
   resource_group_name = azurerm_resource_group.plantsnap.name
