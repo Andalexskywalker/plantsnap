@@ -151,7 +151,7 @@ async def identify_plant(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=traceback.format_exc())
 
 @app.post("/save")
-async def save_plant(request: Request, file: UploadFile = File(...), plantName: str = Form(""), probability: float = Form(0.0)):
+async def save_plant(request: Request, file: UploadFile = File(...), plantName: str = Form(""), probability: float = Form(0.0), description: str = Form(""), watering: str = Form("")):
     user_email = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME", "anonymous")
     try:
         contents = await file.read()
@@ -168,6 +168,8 @@ async def save_plant(request: Request, file: UploadFile = File(...), plantName: 
             "userId": user_email,
             "plantName": plantName,
             "probability": probability,
+            "description": description,
+            "watering": watering,
             "imageUrl": blob_url,
             "imageName": blob_name
         }
