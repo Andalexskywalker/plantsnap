@@ -189,3 +189,32 @@ async def get_garden(request: Request):
     items = list(container.query_items(query=query, enable_cross_partition_query=True))
     
     return {"plants": items}
+
+@app.get("/preferences")
+async def get_preferences(request: Request):
+    user_email = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME", "anonymous")
+    if user_email == "anonymous":
+        return {"notificationsEnabled": False}
+    try:
+        query = f"SELECT * FROM c WHERE c.id = 'prefs-{user_email}'"
+        items = list(container.query_items(query=query, enable_cross_partition_query=True))
+        if items:
+            return {"notificationsEnabled": items[0].get("notificationsEnabled", True)}
+        return {"notificationsEnabled": True}
+    except Exception:
+        return {"notificationsEnabled": True}
+
+@app.post("/preferences")
+async def save_preferences(request: Request):
+    user_email = request.headers.get("X-MS-CLIENT-PRINCIPAL-NAME", "anonymous")
+    if user_email == "anonymous":
+        raise HTTPException(status_code=401, detail="Autenticação necessária.")
+    body = await request.json()
+    notifications_enabled = body.get("notificationsEnabled", True)
+    pref_record = {
+        "id": f"prefs-{user_email}",
+        "userId": user_email,
+        "notificationsEnabled": notifications_enabled
+    }
+    container.upsert_item(pref_record)
+    return {"message": "Preferências guardadas.", "notificationsEnabled": notifications_enabled}
