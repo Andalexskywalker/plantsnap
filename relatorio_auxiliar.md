@@ -15,7 +15,13 @@ plantsnap/
 │   ├── main.py                     # API FastAPI (Endpoints para identificar, guardar, jardim, preferências)
 │   ├── requirements.txt            # Dependências da API (FastAPI, Azure Cosmos/Blob SDKs, Computer Vision)
 │   └── static/
-│       └── index.html              # Frontend premium SPA (Single Page Application) e estilos integrados
+│       ├── index.html              # Frontend SPA (Single Page Application)
+│       ├── style.css               # Folha de estilos CSS separada
+│       └── app.js                  # Lógica JavaScript separada
+├── frontend/                       # Versão standalone do frontend (organizada e separada)
+│   ├── index.html                  # HTML da aplicação
+│   ├── style.css                   # CSS da aplicação
+│   └── app.js                      # JavaScript da aplicação
 ├── function/
 │   ├── host.json                   # Configuração geral do host da Azure Function
 │   ├── local.settings.json         # Configuração local (excluído no .gitignore)
