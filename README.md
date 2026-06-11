@@ -97,6 +97,3 @@ Caso prefira provisionar por script imperativo ou Bicep:
    *O script irá criar o grupo de recursos, ACR, CosmosDB, Storage Accounts, App Service e a Function App automaticamente.*
 
 ---
-
-## 👥 Equipa e Divisão de Tarefas
-*Consulte o relatório em PDF na entrega para obter a listagem de membros do grupo, o cronograma/diagrama de Gantt e a divisão detalhada de tarefas.*
